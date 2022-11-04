@@ -1,54 +1,40 @@
-
-import React, { Suspense, useRef, useMemo } from 'react'
-import * as THREE from 'three'
+import { useRef, useMemo } from 'react'
+import {Object3D} from 'three'
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { PresentationControls, Text3D, Plane, ContactShadows, SpotLight, useTexture, useDepthBuffer  } from '@react-three/drei'
+import { PresentationControls, Environment, ContactShadows, useTexture, Plane, Text3D, SpotLight, useDepthBuffer} from '@react-three/drei'
 import { Model } from './Model'
 
-export default function Viewer() {
+export default function App() {
   const mouse = useRef([0, 0])
-  const ref = useRef()
   const colors = ['#246E81', '#C4BF3F', '#9F315F', '#0F41A6']
 
-
   return (
-    <Canvas shadows dpr={[1, 2]} camera={{ fov: 50 }}>
-      <Suspense fallback={null}>
+    <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 1, 7], fov: 50 }}>
+      <ambientLight intensity={0.5} />
+      <SpotLights />
       <PresentationControls
-        enabled={true} // the controls can be disabled by setting this to false
-        global={false} // Spin globally or by dragging the model
-        cursor={true} // Whether to toggle cursor style on drag
-        snap={false} // Snap-back to center (can also be a spring config)
-        speed={1} // Speed factor
-        zoom={1} // Zoom factor when half the polar-max is reached
-        rotation={[0, 0, 0]} // Default rotation
-        polar={[Math.PI / 8, Math.PI / 4]} // Vertical limits
-        azimuth={[-Math.PI / 4, Math.PI / 4]} // Horizontal limits
-        config={{ mass: 1, tension: 170, friction: 26 }} // Spring config
-      >
-        <SpotLights />
-        <ambientLight color="#FFFFFF" intensity={0.5} />
-        {/* <Sparkles size={2} position={[0 ,1, 0]} color="#C4BF3F" count={10} /> */}
+        global
+        config={{ mass: 2, tension: 150 }}
+        snap={{ mass: 4, tension: 150 }}
+        rotation={[0, 0, 0]}
+        polar={[Math.PI / 8, Math.PI / 4]}
+        azimuth={[-Math.PI / 4, Math.PI / 4]}>
         <Model />
-        <fog attach="fog" args={['white', 50, 190]} />
-        <pointLight distance={100} intensity={4} color="white" />
         <ContactShadows opacity={1} scale={10} blur={1} far={10} resolution={256} color="#000000" />
-          <MaterialPlane />
-          <Text3D font={'/font.json'} bevelEnabled bevelSize={0.05} scale={0.4} position={[-2.5, 0, -1.5]}>
-            18/11/2023
-            <meshPhongMaterial color="#0F41A6" />
-          </Text3D>
-          <Text3D font={'/font.json'} bevelEnabled bevelSize={0.05} scale={0.2} position={[-1.2, 0, 1.5]}>
-            Save the date
+        <MaterialPlane />
+        <Text3D font={'/font.json'} bevelEnabled bevelSize={0.05} scale={[0.4, 1, 0.4]} position={[-2.5, 0, -1.5]}>
+          18/11/2023
           <meshPhongMaterial color="#0F41A6" />
-          </Text3D>
-          <Swarm count={200} mouse={mouse} color={colors[0]} />
-          <Swarm count={200} mouse={mouse} color={colors[1]} />
-          <Swarm count={200} mouse={mouse} color={colors[2]} />
-          <Swarm count={200} mouse={mouse} color={colors[3]} />
-        </PresentationControls>
-      </Suspense>
-      
+        </Text3D>
+        <Text3D font={'/font.json'} bevelEnabled bevelSize={0.05} scale={[0.2, 0.3, 0.2]} position={[-1.3, 0, 1.5]}>
+          Save the date
+          <meshPhongMaterial color="#0F41A6" />
+        </Text3D>
+      </PresentationControls>
+      <Swarm count={200} mouse={mouse} color={colors[0]} />
+      <Swarm count={200} mouse={mouse} color={colors[1]} />
+      <Swarm count={200} mouse={mouse} color={colors[2]} />
+      <Swarm count={200} mouse={mouse} color={colors[3]} />
     </Canvas>
   )
 }
@@ -93,8 +79,6 @@ function MaterialPlane() {
   const props = useTexture({
     map: `disco.jpeg`
   })
-
-  console.log(props)
   return (
     <Plane args={[10, 10]} rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
       {/* <meshPhongMaterial color="#C4BF3F" /> */}
@@ -111,7 +95,7 @@ function Swarm({ count, mouse, color }) {
   const { size, viewport } = useThree()
   const aspect = size.width / viewport.width
 
-  const dummy = useMemo(() => new THREE.Object3D(), [])
+  const dummy = useMemo(() => new Object3D(), [])
   // Generate some random positions, speed factors and timings
   const particles = useMemo(() => {
     const temp = []
