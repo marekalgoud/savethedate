@@ -1,7 +1,7 @@
 import { useRef, useMemo } from 'react'
 import {Object3D} from 'three'
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { PresentationControls, Environment, ContactShadows, useTexture, Plane, Text3D, SpotLight, useDepthBuffer} from '@react-three/drei'
+import { PresentationControls, ContactShadows, useTexture, Plane, Text3D, SpotLight, useDepthBuffer} from '@react-three/drei'
 import { Model } from './Model'
 
 export default function App() {
